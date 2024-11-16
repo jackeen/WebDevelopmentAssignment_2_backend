@@ -1,0 +1,53 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+dist/
+build/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.db
+*.sqlite3
+*.sqlite
+/media
+/staticfiles
+
+# VS Code settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# MySQL database files
+*.sql
+
+# Sphinx documentation
+docs/_build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variable files
+.env
+.env.*
+
+# Coverage reports
+.coverage
+coverage.xml
+htmlcov/
+
+# Pytest
+.cache
+pytestdebug.log
