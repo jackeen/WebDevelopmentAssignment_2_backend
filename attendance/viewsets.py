@@ -1,10 +1,7 @@
-from email._header_value_parser import Section
-
 from rest_framework import viewsets
 
 from attendance.models import Student, Course, Lecture, Class, CollegeDay, Semester
-from attendance.serializers import StudentSerializer, CourseSerializer, LectureSerializer, SemesterSerializer, \
-    CollegeDaySerializer
+from attendance.serializers import StudentSerializer, CourseSerializer, LectureSerializer, SemesterSerializer
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -26,10 +23,6 @@ class SemesterViewSet(viewsets.ModelViewSet):
     queryset = Semester.objects.all()
     serializer_class = SemesterSerializer
 
-
-class CollegeDayViewSet(viewsets.ModelViewSet):
-    queryset = CollegeDay.objects.all()
-    serializer_class = CollegeDaySerializer
 
 class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()

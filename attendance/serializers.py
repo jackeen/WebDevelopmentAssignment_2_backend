@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers, status
 from rest_framework.response import Response
@@ -97,17 +99,40 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'code', 'name']
 
 
+def generate_college_days(semester_instance):
+    date_list = []
+    current_date = semester_instance.start_date
+    while current_date <= semester_instance.end_date:
+        date_list.append(current_date)
+        collegeDay, _ = CollegeDay.objects.get_or_create(
+            semester=semester_instance,
+            date=current_date,
+        )
+        collegeDay.save()
+        current_date += timedelta(days=1)
+
 
 class SemesterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semester
         fields = ['id', 'year', 'semester', 'start_date', 'end_date']
 
+    def create(self, validated_data):
+        semester = Semester.objects.create(**validated_data)
+        generate_college_days(semester)
+        return semester
 
-class CollegeDaySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollegeDay
-        fields = ['id', 'date', 'semester']
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        generate_college_days(instance)
+        instance.save()
+        return instance
+
+    def destroy(self, request, *args, **kwargs):
+        semester = self.get_object()
+        semester.delete()
+        return semester
 
 
 class ClassSerializer(serializers.ModelSerializer):
