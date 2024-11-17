@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 
 from attendance.models import Student, Course, Lecture, Class, CollegeDay, Semester
-from attendance.serializers import StudentSerializer, CourseSerializer, LectureSerializer, SemesterSerializer
+from attendance.serializers import StudentSerializer, CourseSerializer, LectureSerializer, SemesterSerializer, \
+    ClassSerializer
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -26,3 +27,4 @@ class SemesterViewSet(viewsets.ModelViewSet):
 
 class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()
+    serializer_class = ClassSerializer

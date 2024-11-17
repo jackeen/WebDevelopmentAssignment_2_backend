@@ -136,6 +136,72 @@ class SemesterSerializer(serializers.ModelSerializer):
 
 
 class ClassSerializer(serializers.ModelSerializer):
+    students = StudentSerializer(many=True, read_only=True)
+    lecture = LectureSerializer(read_only=True)
+    semester = SemesterSerializer(read_only=True)
+    course = CourseSerializer(read_only=True)
+
+    semester_id = serializers.PrimaryKeyRelatedField(
+        queryset=Semester.objects.all(),
+        write_only=True,
+    )
+    course_id = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        write_only=True,
+    )
+    lecture_id = serializers.PrimaryKeyRelatedField(
+        queryset=Lecture.objects.all(),
+        write_only=True,
+        required=False,
+        allow_null=True,
+    )
+    student_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all(),
+        write_only=True,
+        many=True,
+        required=False,
+    )
+
     class Meta:
         model = Class
-        fields = ['id', 'number', 'semester', 'course', 'lecture', 'students']
+        fields = [
+            'id', 'number',
+            'semester_id','semester',
+            'course_id', 'course',
+            'lecture_id', 'lecture',
+            'student_ids', 'students'
+        ]
+
+    def create(self, validated_data):
+        course = validated_data.pop('course_id')
+        semester = validated_data.pop('semester_id')
+        class_instance = Class.objects.create(
+            semester=semester,
+            course=course,
+            number=validated_data['number'],
+        )
+        return class_instance
+
+    def to_internal_value(self, data):
+        if 'lecture_id' in data and data['lecture_id'] == 0:
+            data['lecture_id'] = None
+        return super().to_internal_value(data)
+
+    def update(self, instance, validated_data):
+        if 'course_id' in validated_data:
+            instance.course = validated_data.pop('course_id')
+
+        if 'semester_id' in validated_data:
+            instance.semester = validated_data.pop('semester_id')
+
+        if 'lecture_id' in validated_data:
+            instance.lecture = validated_data.pop('lecture_id')
+
+        if 'student_ids' in validated_data:
+            instance.students.set(validated_data.pop('student_ids'))
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
