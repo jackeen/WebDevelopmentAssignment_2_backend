@@ -31,6 +31,11 @@ def logout(request):
 @api_view(['GET'])
 def get_user_id(request):
     user = request.user
+    group = user.groups.first()
+    if not group:
+        group = ""
+    else:
+        group = group.name
 
     return Response(
         data={
@@ -42,7 +47,7 @@ def get_user_id(request):
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
             'is_active': user.is_active,
-            'group': user.groups.first(),
+            'group': group,
         },
         status=status.HTTP_200_OK
     )
