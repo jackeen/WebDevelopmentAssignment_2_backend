@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -25,8 +24,10 @@ SECRET_KEY = 'django-insecure-y%l+xeb(ai9zvob$72*o@ti9+v974!b&#tkilm=03e!9tzx4l^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'localhost',
+    '.vercel.app'
+]
 
 # Application definition
 
@@ -77,17 +78,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'WebDevelopmentAssignment_2_backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'verceldb',
+        'USER': 'default',
+        'PASSWORD': 'F5Zn4AMxKzqP',
+        'HOST': 'ep-billowing-glade-a7uv8f3i.ap-southeast-2.aws.neon.tech',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -107,7 +117,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -118,7 +127,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -142,8 +150,8 @@ REST_FRAMEWORK = {
 
 # cross domain for security
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    # Add your vercel react deploy url here
+    "http://localhost:5173",
+    "https://web-dev-assignment-2-frontend.vercel.app"
 ]
 CORS_ALLOW_HEADERS = [
     'access-control-allow-origin',
@@ -154,7 +162,6 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-
 
 # system information
 APP_NAME = 'Attendance'
