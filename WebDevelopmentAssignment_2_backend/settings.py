@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'WebDevelopmentAssignment_2_backend.wsgi.application'
+WSGI_APPLICATION = 'WebDevelopmentAssignment_2_backend.wsgi.app'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -160,7 +160,8 @@ CORS_ALLOW_HEADERS = [
     'access-control-allow-methods',
     'content-type',
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 
 # system information
