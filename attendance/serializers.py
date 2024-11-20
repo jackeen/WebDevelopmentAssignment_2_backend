@@ -4,7 +4,8 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
-from attendance.models import Student, GROUP_STUDENT, Lecture, GROUP_LECTURE, Course, Class, Semester, CollegeDay
+from attendance.models import Student, GROUP_STUDENT, Lecture, GROUP_LECTURE, Course, Class, Semester, CollegeDay, \
+    Attendance
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -205,3 +206,70 @@ class ClassSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class CollegeDaySerializer(serializers.ModelSerializer):
+    semester_id = serializers.PrimaryKeyRelatedField(
+        queryset=Semester.objects.all(),
+    )
+
+    class Meta:
+        model = CollegeDay
+        fields = ['id', 'semester_id', 'date']
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all(),
+        source='student'
+    )
+    class_id = serializers.PrimaryKeyRelatedField(
+        queryset=Class.objects.all(),
+        source='class_ref'
+    )
+    college_day_id = serializers.PrimaryKeyRelatedField(
+        queryset=CollegeDay.objects.all(),
+        source='college_day',
+        write_only=True
+    )
+    college_day = CollegeDaySerializer(read_only=True)
+    lecture_id = serializers.PrimaryKeyRelatedField(
+        queryset=Lecture.objects.all(),
+        source='lecture',
+        required=False,  # Make it optional since it can be null
+        allow_null=True
+    )
+
+    class Meta:
+        model = Attendance
+        fields = ['id',
+                  'class_id',
+                  'student_id',
+                  'lecture_id',
+                  'status',
+                  'college_day_id',
+                  'college_day',
+                  ]
+
+    def create(self, validated_data):
+        student = validated_data['student']
+        class_ref = validated_data['class_ref']
+        college_day = validated_data['college_day']
+        lecture = validated_data.get('lecture', None)
+
+        # Check if the record exists
+        attendance_instance = Attendance.objects.filter(
+            student=student,
+            class_ref=class_ref,
+            college_day=college_day,
+            lecture=lecture
+        ).first()
+
+        # If there is an existed record, just update its status
+        if attendance_instance:
+            attendance_instance.status = validated_data['status']
+            attendance_instance.save()
+            return attendance_instance
+
+        # If it doesn't exist, create a new one
+        return super().create(validated_data)
