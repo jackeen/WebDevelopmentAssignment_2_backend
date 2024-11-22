@@ -13,20 +13,22 @@ class JSONResponseMiddleware(MiddlewareMixin):
             if response.status_code >= 400:
                 try:
                     error_content = response.content.decode('utf-8')
-                    error = json.loads(error_content)
+                    error_data = json.loads(error_content)
                 except json.JSONDecodeError:
-                    error = {"detail": error_content}
+                    error_data = {"detail": error_content}
 
                 print('error: ', response.status_code, response.content)
 
-                if isinstance(error, dict):
-                    flat_errors = []
-                    for field, messages in error.items():
-                        if isinstance(messages, list):
-                            flat_errors.extend([f"{message} for {field}" for message in messages])
-                        else:
-                            flat_errors.append(f"{messages} for {field}")
-                    error = flat_errors
+                def extract_messages(data):
+                    messages = []
+                    if isinstance(data, dict):
+                        for value in data.values():
+                            messages.extend(extract_messages(value))
+                    elif isinstance(data, list):
+                        messages.extend(data)
+                    return messages
+
+                error = extract_messages(error_data)
 
             else:
                 success = True
